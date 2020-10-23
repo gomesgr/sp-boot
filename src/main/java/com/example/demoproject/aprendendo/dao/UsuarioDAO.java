@@ -20,4 +20,6 @@ public interface UsuarioDAO {
 
     int deletarUsuarioPorId(UUID id);
 
+    int atualizarUsuarioPorId(UUID id, Usuario usuario);
+
 }

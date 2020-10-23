@@ -36,4 +36,8 @@ public class UsuarioService {
         return USUARIO_DAO.listarUsuarioPorId(id);
     }
 
+    public int atualizarUsuarioPorId(UUID id, Usuario usuario) {
+        return USUARIO_DAO.atualizarUsuarioPorId(id, usuario);
+    }
+
 }

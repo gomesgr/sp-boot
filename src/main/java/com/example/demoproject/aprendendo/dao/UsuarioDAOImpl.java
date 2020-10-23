@@ -1,5 +1,6 @@
 package com.example.demoproject.aprendendo.dao;
 
+import com.example.demoproject.aprendendo.datarefinement.RefineData;
 import com.example.demoproject.aprendendo.exceptions.AprendendoAuthException;
 import com.example.demoproject.aprendendo.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     private static final String SQL_LISTAR_TODOS = "SELECT * FROM usuario";
     private static final String SQL_DELETAR_ID = "DELETE FROM usuario WHERE usuario_id = ?";
     private static final String SQL_LISTAR_POR_ID = "SELECT * FROM usuario WHERE usuario_id = ?";
+    private static final String SQL_ATUALIZAR_POR_ID = "UPDATE usuario SET nome = ?, email = ? " +
+            "WHERE usuario_id = ?";
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -32,13 +35,12 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(connection -> {
+                if (!RefineData.emailCorreto(usuario.getEmail())) {
+                    throw new AprendendoAuthException("Email incorreto, tente novamente");
+                }
                 PreparedStatement ps = connection.prepareStatement(
                         SQL_INSERIR, Statement.RETURN_GENERATED_KEYS);
                 ps.setObject(1, uuid);
-                Pattern emailPattern = Pattern.compile("^(.+)@(.+)$");
-                if (!emailPattern.matcher(usuario.getEmail()).matches()) {
-                    throw new AprendendoAuthException("Email incorreto, tente novamente");
-                }
                 ps.setString(2, usuario.getNome());
                 ps.setString(3, usuario.getEmail());
                 return ps;
@@ -72,5 +74,23 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         System.out.println("USUARIO: ");
         System.out.println(us);
         return us;
+    }
+
+    @Override
+    public int atualizarUsuarioPorId(UUID id, Usuario usuario) {
+        return jdbcTemplate.update(connection -> {
+            try {
+                if (!RefineData.emailCorreto(usuario.getEmail())) {
+                    throw new AprendendoAuthException("Email incorreto, tente novamente");
+                }
+                PreparedStatement ps = connection.prepareStatement(SQL_ATUALIZAR_POR_ID);
+                ps.setString(1, usuario.getNome());
+                ps.setString(2, usuario.getEmail());
+                ps.setObject(3, id);
+                return ps;
+            } catch (Exception e) {
+                throw new AprendendoAuthException("Erro ao atualizar dados " + e);
+            }
+        }, new GeneratedKeyHolder());
     }
 }

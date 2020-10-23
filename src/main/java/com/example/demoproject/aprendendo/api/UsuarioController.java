@@ -34,9 +34,12 @@ public class UsuarioController {
     }
 
     @GetMapping(path = "{id}")
-    Usuario listarUsuarioPorId(@PathVariable("id") UUID id) {
-        System.out.println("fjihdsfhdhjg");
-        System.out.println(id);
+    public Usuario listarUsuarioPorId(@PathVariable("id") UUID id) {
         return USUARIO_SERVICE.listarUsuarioPorId(id);
+    }
+
+    @PutMapping(path = "{id}")
+    public int atualizarUsuarioPorId(@PathVariable("id") UUID id, @RequestBody Usuario usuario) {
+        return USUARIO_SERVICE.atualizarUsuarioPorId(id, usuario);
     }
 }
