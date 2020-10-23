@@ -15,7 +15,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Repository("usuariodao")
 public class UsuarioDAOImpl implements UsuarioDAO {
